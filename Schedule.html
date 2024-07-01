@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Work Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px 0;
+        }
+        .day {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #fff, #f3f4f6);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .day h3 {
+            margin: 0 0 15px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 10px;
+            border-radius: 3px;
+            font-size: 18px;
+        }
+        .day p {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .day ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+        .day li {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .status label {
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .status select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        .status button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .status button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+        .done-date {
+            margin-left: 10px;
+            font-style: italic;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="goal-tracker">
+    <!-- Days will be dynamically added here -->
+</div>
+
+<script>
+    const days = [
+        { day: 'Task 1', topic: 'Basics', resources: ['All about [What is Big Data]'] },
+        { day: 'Task 2', topic: 'Programming (Python/Java/Scala)', resources: ['Python - w3Schools', 'Python for Beginners', 'Pandas Tutorial', 'NumPy Tutorial', 'Hackerrank (For Practice)', 'Codechef (For Practice)'] },
+        { day: 'Task 3', topic: 'DBMS Concepts & SQL (MySQL/PostgreSQL)', resources: ['Javatpoint', 'W3Schools', 'TechTFQ YT channel', 'LeetCode (For Practice)', 'Hackerrank (For Practice)'] },
+        { day: 'Task 4', topic: 'Linux', resources: ['YT video', 'GeeksForGeeks'] },
+        { day: 'Task 5', topic: 'Data Warehousing Concepts', resources: ['Database vs Data Warehouse vs Data Lake', 'OLAP vs OLTP', 'Star vs Snowflake Schema'] },
+        { day: 'Task 6', topic: 'ETL Process', resources: ['ETL', 'Data Pipeline'] },
+        { day: 'Task 7', topic: 'Apache Hadoop', resources: ['Hadoop Tutorial'] },
+        { day: 'Task 8', topic: 'Hive', resources: ['Hive Tutorial'] },
+        { day: 'Task 9', topic: 'Apache Spark', resources: ['Spark Tutorial', 'PySpark freeCodeCamp', 'ScalaSpark', 'PySpark'] },
+        { day: 'Task 10', topic: 'Orchestration Tool (Airflow)', resources: ['DataCamp', 'Airflow Official Documentation', 'Medium Blog'] },
+        { day: 'Task 11', topic: 'Cloud Platform (AWS/Azure/GCP)', resources: ['Data engineering on Azure', 'Azure for Everyone', 'k21academy'] },
+        { day: 'Task 12', topic: 'Projects', resources: ['End-to-End Azure Data Engineering Project', 'End-to-End DE Project', 'Airflow Project', 'Data Engineering Project'] }
+    ];
+
+    function loadDays() {
+        const container = document.getElementById('goal-tracker');
+        container.innerHTML = '';
+
+        days.forEach((day, index) => {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+
+            const dayTitle = document.createElement('h3');
+            dayTitle.innerText = day.day;
+            dayDiv.appendChild(dayTitle);
+
+            const topic = document.createElement('p');
+            topic.innerText = `Topic: ${day.topic}`;
+            dayDiv.appendChild(topic);
+
+            const resourcesList = document.createElement('ul');
+            day.resources.forEach(resource => {
+                const listItem = document.createElement('li');
+                listItem.innerText = resource;
+                resourcesList.appendChild(listItem);
+            });
+            dayDiv.appendChild(resourcesList);
+
+            const statusDiv = document.createElement('div');
+            statusDiv.className = 'status';
+
+            const statusLabel = document.createElement('label');
+            statusLabel.innerText = 'Status:';
+            statusDiv.appendChild(statusLabel);
+
+            const statusSelect = document.createElement('select');
+            statusSelect.innerHTML = `
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+            `;
+            statusSelect.value = localStorage.getItem(`status-${index}`) || 'Not Started';
+            statusSelect.disabled = index > 0 && localStorage.getItem(`status-${index - 1}`) !== 'Done' || localStorage.getItem(`status-${index}`) === 'Done';
+            statusSelect.id = `status-${index}`;
+            statusDiv.appendChild(statusSelect);
+
+            const updateButton = document.createElement('button');
+            updateButton.innerText = 'Update';
+            updateButton.disabled = statusSelect.disabled;
+            updateButton.onclick = () => updateStatus(index);
+            statusDiv.appendChild(updateButton);
+
+            const doneDate = localStorage.getItem(`doneDate-${index}`);
+            if (doneDate) {
+                const doneDateText = document.createElement('span');
+                doneDateText.className = 'done-date';
+                doneDateText.innerText = `Completed on: ${doneDate}`;
+                statusDiv.appendChild(doneDateText);
+            }
+
+            dayDiv.appendChild(statusDiv);
+            container.appendChild(dayDiv);
+        });
+    }
+
+    function updateStatus(index) {
+        const statusSelect = document.getElementById(`status-${index}`);
+        const status = statusSelect.value;
+        if (status === 'Done') {
+            const doneDate = new Date().toLocaleDateString();
+            localStorage.setItem(`doneDate-${index}`, doneDate);
+        }
+        localStorage.setItem(`status-${index}`, status);
+        loadDays();
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDays);
+</script>
+
+</body>
+</html>
