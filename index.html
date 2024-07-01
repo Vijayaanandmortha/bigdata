@@ -14,7 +14,27 @@
             align-items: center;
             background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
             color: #333;
+            position: relative; /* Ensure relative positioning for absolute elements */
         }
+        .user-details {
+            background-color: #667eea;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 10px; /* Adjust the top margin as needed */
+            display: flex;
+            justify-content: center;
+        }
+
+                @media only screen and (max-width: 600px) {
+            .user-details {
+                padding: 5px; /* Reduce padding for smaller size */
+                font-size: 14px; /* Decrease font size for smaller size */
+            }
+        }
+
         .container {
             width: 90%;
             max-width: 600px;
@@ -35,18 +55,18 @@
             padding: 10px;
             border-radius: 3px;
             font-size: 18px;
+            cursor: pointer; /* Add cursor pointer for interaction */
         }
         .day p {
             margin: 0 0 10px 0;
             font-size: 16px;
             font-weight: 500;
         }
-        .day ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0 0 15px 0;
+        .day .resources-list {
+            list-style-type: disc; /* Stylish bullet points */
+            padding-left: 20px; /* Adjust padding for bullet points */
         }
-        .day li {
+        .day .resources-list li {
             margin-bottom: 5px;
             font-size: 14px;
         }
@@ -90,24 +110,60 @@
 </head>
 <body>
 
+<div class="user-details">
+    <span id="user-name"></span>
+    <span id="course-name">Web Development</span>
+    <span id="start-date"></span>
+</div>
+
 <div class="container" id="goal-tracker">
     <!-- Days will be dynamically added here -->
 </div>
 
 <script>
+    // Function to load user details from localStorage
+    function loadUserDetails() {
+        const userName = localStorage.getItem('userName');
+        const startDate = localStorage.getItem('startDate');
+
+        if (userName) {
+            document.getElementById('user-name').textContent = `Welcome, ${userName}!`;
+        }
+
+        if (startDate) {
+            document.getElementById('start-date').textContent = `Started on: ${startDate}`;
+        }
+    }
+
+    // Function to save user details to localStorage
+    function saveUserDetails() {
+        let userName = localStorage.getItem('userName');
+        let startDate = localStorage.getItem('startDate');
+
+        if (!userName) {
+            userName = prompt('Please enter your name:');
+            localStorage.setItem('userName', userName);
+        }
+
+        if (!startDate) {
+            startDate = new Date().toLocaleDateString();
+            localStorage.setItem('startDate', startDate);
+        }
+    }
+
     const days = [
-        { day: 'Task 1', topic: 'Basics', resources: ['All about [What is Big Data]'] },
-        { day: 'Task 2', topic: 'Programming (Python/Java/Scala)', resources: ['Python - w3Schools', 'Python for Beginners', 'Pandas Tutorial', 'NumPy Tutorial', 'Hackerrank (For Practice)', 'Codechef (For Practice)'] },
-        { day: 'Task 3', topic: 'DBMS Concepts & SQL (MySQL/PostgreSQL)', resources: ['Javatpoint', 'W3Schools', 'TechTFQ YT channel', 'LeetCode (For Practice)', 'Hackerrank (For Practice)'] },
-        { day: 'Task 4', topic: 'Linux', resources: ['YT video', 'GeeksForGeeks'] },
-        { day: 'Task 5', topic: 'Data Warehousing Concepts', resources: ['Database vs Data Warehouse vs Data Lake', 'OLAP vs OLTP', 'Star vs Snowflake Schema'] },
-        { day: 'Task 6', topic: 'ETL Process', resources: ['ETL', 'Data Pipeline'] },
-        { day: 'Task 7', topic: 'Apache Hadoop', resources: ['Hadoop Tutorial'] },
-        { day: 'Task 8', topic: 'Hive', resources: ['Hive Tutorial'] },
-        { day: 'Task 9', topic: 'Apache Spark', resources: ['Spark Tutorial', 'PySpark freeCodeCamp', 'ScalaSpark', 'PySpark'] },
-        { day: 'Task 10', topic: 'Orchestration Tool (Airflow)', resources: ['DataCamp', 'Airflow Official Documentation', 'Medium Blog'] },
-        { day: 'Task 11', topic: 'Cloud Platform (AWS/Azure/GCP)', resources: ['Data engineering on Azure', 'Azure for Everyone', 'k21academy'] },
-        { day: 'Task 12', topic: 'Projects', resources: ['End-to-End Azure Data Engineering Project', 'End-to-End DE Project', 'Airflow Project', 'Data Engineering Project'] }
+        { day: 'Day 1 & 2', topic: 'Basics of Big Data', resources: ['All about What is Big Data, its characteristics, and importance.'] },
+        { day: 'Day 3-4', topic: 'Python Basics', resources: ['Learn Python fundamentals (variables, data types, loops, functions).', 'Practice exercises on platforms like Hackerrank and Codechef.'] },
+        { day: 'Day 5-7', topic: 'Python Libraries for Data Science', resources: ['Study Pandas and NumPy for data manipulation and analysis.', 'Complete exercises on Pandas and NumPy tutorials.'] },
+        { day: 'Day 8-9', topic: 'DBMS Fundamentals', resources: ['Understand database management systems (DBMS) concepts.', 'Practice SQL queries for data retrieval and manipulation.'] },
+        { day: 'Day 10-12', topic: 'Advanced SQL and Practice', resources: ['Learn advanced SQL topics (joins, subqueries, transactions).', 'Solve SQL practice problems on LeetCode and Hackerrank.'] },
+        { day: 'Day 13-15', topic: 'Data Warehousing Fundamentals', resources: ['Differences between Database, Data Warehouse, and Data Lake.', 'Understand OLAP vs OLTP and Star vs Snowflake Schema.'] },
+        { day: 'Day 16-17', topic: 'ETL Process', resources: ['Study ETL (Extract, Transform, Load) process and its importance.', 'Explore data pipelines and tools used for ETL.'] },
+        { day: 'Day 18-20', topic: 'Introduction to Apache Hadoop', resources: ['Learn about Hadoop ecosystem components (HDFS, MapReduce).', 'Complete Hadoop tutorials and hands-on exercises.'] },
+        { day: 'Day 21-22', topic: 'Hive', resources: ['Understand Hive architecture and its integration with Hadoop.', 'Complete Hive tutorials and practice Hive queries.'] },
+        { day: 'Day 23-25', topic: 'Apache Spark', resources: ['Study Apache Spark fundamentals.', 'Practice with PySpark and ScalaSpark tutorials.'] },
+        { day: 'Day 26-27', topic: 'Orchestration Tool (Airflow)', resources: ['Learn about Apache Airflow for workflow orchestration.', 'Complete Airflow tutorials and set up a basic workflow.'] },
+        { day: 'Day 28-30', topic: 'Cloud Platforms (AWS/Azure/GCP)', resources: ['Understand data engineering on cloud platforms (AWS, Azure, GCP).', 'Complete tutorials and hands-on labs on cloud-based data services.'] }
     ];
 
     function loadDays() {
@@ -120,6 +176,7 @@
 
             const dayTitle = document.createElement('h3');
             dayTitle.innerText = day.day;
+            dayTitle.addEventListener('click', () => toggleSubTopics(dayDiv, index)); // Add click event listener
             dayDiv.appendChild(dayTitle);
 
             const topic = document.createElement('p');
@@ -127,6 +184,7 @@
             dayDiv.appendChild(topic);
 
             const resourcesList = document.createElement('ul');
+            resourcesList.className = 'resources-list'; // Add class for styling bullet points
             day.resources.forEach(resource => {
                 const listItem = document.createElement('li');
                 listItem.innerText = resource;
@@ -150,16 +208,11 @@
             statusSelect.value = localStorage.getItem(`status-${index}`) || 'Not Started';
             statusSelect.disabled = index > 0 && localStorage.getItem(`status-${index - 1}`) !== 'Done' || localStorage.getItem(`status-${index}`) === 'Done';
             statusSelect.id = `status-${index}`;
+            statusSelect.addEventListener('change', () => updateStatus(index)); // Add change event listener
             statusDiv.appendChild(statusSelect);
 
-            const updateButton = document.createElement('button');
-            updateButton.innerText = 'Update';
-            updateButton.disabled = statusSelect.disabled;
-            updateButton.onclick = () => updateStatus(index);
-            statusDiv.appendChild(updateButton);
-
-            const doneDate = localStorage.getItem(`doneDate-${index}`);
-            if (doneDate) {
+            const doneDate = localStorage.getItem(`doneDate-${index}`) || '';
+            if (localStorage.getItem(`status-${index}`) === 'Done') {
                 const doneDateText = document.createElement('span');
                 doneDateText.className = 'done-date';
                 doneDateText.innerText = `Completed on: ${doneDate}`;
@@ -167,6 +220,7 @@
             }
 
             dayDiv.appendChild(statusDiv);
+
             container.appendChild(dayDiv);
         });
     }
@@ -174,15 +228,41 @@
     function updateStatus(index) {
         const statusSelect = document.getElementById(`status-${index}`);
         const status = statusSelect.value;
+
         if (status === 'Done') {
-            const doneDate = new Date().toLocaleDateString();
-            localStorage.setItem(`doneDate-${index}`, doneDate);
+            const currentDate = new Date().toLocaleDateString();
+            localStorage.setItem(`doneDate-${index}`, currentDate);
+        } else {
+            localStorage.removeItem(`doneDate-${index}`);
         }
+
         localStorage.setItem(`status-${index}`, status);
-        loadDays();
+        loadDays(); // Reload days to update status and done date display
     }
 
-    document.addEventListener('DOMContentLoaded', loadDays);
+    function toggleSubTopics(dayDiv, index) {
+        const currentStatus = localStorage.getItem(`status-${index}`);
+        if (currentStatus === 'Done') {
+            return; // Do not display sub topics if day is marked as Done
+        }
+
+        const isCollapsed = dayDiv.classList.toggle('collapsed');
+        if (!isCollapsed) {
+            dayDiv.style.height = `${dayDiv.scrollHeight}px`;
+        } else {
+            dayDiv.style.height = 'auto';
+            const maxHeight = `${dayDiv.scrollHeight}px`;
+            dayDiv.style.height = '0px'; // Collapse initially
+            setTimeout(() => dayDiv.style.height = maxHeight, 0); // Expand smoothly
+        }
+    }
+
+    // Load user details and save if not already saved
+    document.addEventListener('DOMContentLoaded', () => {
+        saveUserDetails();
+        loadUserDetails();
+        loadDays(); // Load the days after loading user details
+    });
 </script>
 
 </body>
